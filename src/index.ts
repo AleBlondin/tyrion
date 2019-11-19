@@ -62,7 +62,7 @@ switch (true) {
     codeQualityInformationPromise
       .then((codeQualityInformation: CodeQualityInformation): void => {
         CodeQualityInformationDisplayer.display(codeQualityInformation);
-        const reportPath = TemplateRenderer.renderTypeParetoGraph(codeQualityInformation.debt.debtParetos);
+        const reportPath = TemplateRenderer.renderTypeParetoGraph(codeQualityInformation.debt.debtTypes);
         console.log(colors.green('The report was generated at ' + reportPath));
 
         if (!program.nobrowser) {

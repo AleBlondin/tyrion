@@ -1,5 +1,5 @@
 import Collector from '../services/collector';
-import { PRIORITIZATION_TYPES } from '../model/debtPareto';
+import { PRIORITIZATION_TYPES } from '../model/debtType';
 import Config from '../services/config';
 import { CodeQualityInformationInterface } from '../model/types';
 

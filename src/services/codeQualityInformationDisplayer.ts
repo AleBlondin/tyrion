@@ -1,11 +1,6 @@
 import Table from 'cli-table';
 import colors from 'colors';
-import {
-  DebtItemInterface,
-  DebtParetoInterface,
-  CodeQualityInformationInterface,
-  DebtInterface,
-} from '../model/types';
+import { DebtItemInterface, DebtTypeInterface, CodeQualityInformationInterface, DebtInterface } from '../model/types';
 
 export default class CodeQualityInformationDisplayer {
   public static display(codeQualityInformation: CodeQualityInformationInterface): void {
@@ -22,9 +17,9 @@ export default class CodeQualityInformationDisplayer {
       head: [colors.bold('Type'), colors.bold('Score'), colors.bold('File'), colors.bold('Comment')],
     });
 
-    debt.debtParetos.forEach((debtPareto: DebtParetoInterface): void => {
-      const debtItemsNumber = debtPareto.debtItems.length;
-      debtPareto.debtItems.map((debtItem: DebtItemInterface): void => {
+    debt.debtTypes.forEach((debtType: DebtTypeInterface): void => {
+      const debtItemsNumber = debtType.debtItems.length;
+      debtType.debtItems.map((debtItem: DebtItemInterface): void => {
         table.push([debtItem.type, debt.pricer.getPrice(debtItem), debtItem.fileName, debtItem.comment]);
       });
       totalItems += debtItemsNumber;

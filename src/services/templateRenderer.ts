@@ -3,7 +3,7 @@ import path from 'path';
 import _ from 'lodash';
 
 import DateHelper from '../utils/dateHelper';
-import { DebtParetoInterface, CodeQualityInformationHistoryInterface } from '../model/types';
+import { DebtTypeInterface, CodeQualityInformationHistoryInterface } from '../model/types';
 
 const reportName = 'tyrion_report.html';
 
@@ -38,12 +38,12 @@ export default class TemplateRenderer {
     return this.renderGraph(file, { dataDebt: debtGraphData, standard: standard });
   }
 
-  public static renderTypeParetoGraph(debtParetos: Map<string, DebtParetoInterface>): string {
+  public static renderTypeParetoGraph(debtTypes: Map<string, DebtTypeInterface>): string {
     const file = fs.readFileSync(
       path.resolve(__dirname, '../template/google_charts/pareto_by_debt_type_report.html'),
       'utf-8',
     );
 
-    return this.renderGraph(file, { dataDebt: debtParetos });
+    return this.renderGraph(file, { dataDebt: debtTypes });
   }
 }

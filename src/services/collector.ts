@@ -228,7 +228,6 @@ export default class Collector {
 
     // Process price:PRICE
     const price = this.getPrice(lineElements);
-    const { isContagious, isDangerous } = this.getDebtPriorization(lineElements);
 
     return new DebtItem({
       type: debtType,
@@ -236,8 +235,6 @@ export default class Collector {
       comment,
       fileName,
       price,
-      isContagious,
-      isDangerous,
     });
   }
 
@@ -263,12 +260,5 @@ export default class Collector {
     const priceAnnotation = lineElements.filter((lineElement): boolean => lineElement.startsWith('price:'));
 
     return !isEmpty(priceAnnotation) ? parseInt(priceAnnotation[0].split(':')[1]) : undefined;
-  }
-
-  private getDebtPriorization(lineElements: string[]): { isContagious: boolean; isDangerous: boolean } {
-    const isContagious = lineElements.includes('contagious');
-    const isDangerous = lineElements.includes('dangerous');
-
-    return { isContagious, isDangerous };
   }
 }

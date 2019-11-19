@@ -1,13 +1,13 @@
-import DebtPareto from './debtPareto';
-import { DebtItemInterface, PricerInterface, DebtParetoInterface, DebtInterface, PrioritizationTypes } from './types';
+import DebtType from './debtType';
+import { DebtItemInterface, PricerInterface, DebtTypeInterface, DebtInterface } from './types';
 
 export default class Debt implements DebtInterface {
-  public debtParetos: Map<string, DebtParetoInterface>;
+  public debtTypes: { [type: string]: DebtTypeInterface };
   public debtScore: number;
   public pricer: PricerInterface;
 
   public constructor(pricer: PricerInterface) {
-    this.debtParetos = new Map<string, DebtParetoInterface>();
+    this.debtTypes = {};
     this.debtScore = 0;
     this.pricer = pricer;
   }
@@ -15,26 +15,18 @@ export default class Debt implements DebtInterface {
   public addDebtItem(debtItem: DebtItemInterface): void {
     this.debtScore += this.pricer.getPrice(debtItem);
 
-    let debtPareto = this.debtParetos.get(debtItem.type);
-    if (debtPareto) {
-      debtPareto.addDebtItem(debtItem);
+    let debtType = this.debtTypes[debtItem.type];
+    if (debtType) {
+      debtType.addDebtItem(debtItem);
     } else {
-      debtPareto = new DebtPareto(debtItem.type, this.pricer);
-      debtPareto.addDebtItem(debtItem);
-      this.debtParetos.set(debtItem.type, debtPareto);
+      debtType = new DebtType(debtItem.type, this.pricer);
+      debtType.addDebtItem(debtItem);
+      this.debtTypes[debtItem.type] = debtType;
     }
   }
 
   public getDebtScoreByType(type: string): number {
-    const pareto = this.debtParetos.get(type);
+    const pareto = this.debtTypes[type];
     return pareto ? pareto.debtScore : 0;
-  }
-
-  public getDebtScoreByPrioritization(prioritizationType: PrioritizationTypes): number {
-    let debtScore = 0;
-    for (const [, pareto] of this.debtParetos) {
-      debtScore += pareto.debtScoreByPrioritization[prioritizationType];
-    }
-    return debtScore;
   }
 }

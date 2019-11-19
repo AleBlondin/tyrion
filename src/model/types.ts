@@ -1,38 +1,29 @@
-export type PrioritizationTypes = 'isCritical' | 'isDangerous' | 'isContagious' | 'isIdle';
-
-export type ItemInterface = {
+export type DebtItemInterface = {
   category: string;
   comment: string;
   fileName: string;
   id: string;
   type: string;
-};
-
-export type DebtItemInterface = ItemInterface & {
   price?: number;
-  isContagious: boolean;
-  isDangerous: boolean;
 };
 
 export type PricerInterface = {
   getPrice: (debt: DebtItemInterface) => number;
 };
 
-export type DebtParetoInterface = {
+export type DebtTypeInterface = {
   debtItems: DebtItemInterface[];
   debtScore: number;
-  debtScoreByPrioritization: { [prioritizationType in PrioritizationTypes]: number };
   type: string;
   addDebtItem: (debtItem: DebtItemInterface) => void;
 };
 
 export type DebtInterface = {
-  debtParetos: Map<string, DebtParetoInterface>;
+  debtTypes: { [type: string]: DebtTypeInterface };
   debtScore: number;
   pricer: PricerInterface;
   addDebtItem: (debtItem: DebtItemInterface) => void;
   getDebtScoreByType: (type: string) => number;
-  getDebtScoreByPrioritization: (prioritizationType: PrioritizationTypes) => number;
 };
 
 export type CodeQualityInformationInterface = {
