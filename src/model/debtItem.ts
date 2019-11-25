@@ -9,6 +9,7 @@ export default class DebtItem implements DebtItemInterface {
   public id: string;
   public numberOfOccurences: number;
   public timeLost: number;
+  public numberOfChanges: number;
 
   public constructor({
     id,
@@ -29,6 +30,7 @@ export default class DebtItem implements DebtItemInterface {
     this.bugs = bugs;
     this.timeLost = timeLost;
     this.numberOfOccurences = 1;
+    this.numberOfChanges = 1;
   }
 
   public addDebtItem(debtItem: DebtItemInterface) {

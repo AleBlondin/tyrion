@@ -9,6 +9,7 @@ import nodeGit from 'nodegit';
 import pathHelper from '../utils/pathHelper';
 import { ConfigInterface, DebtInterface } from '../model/types';
 import { parseLineToDebtItem } from './parser';
+import DebtHistory from '../model/debtHistory';
 
 export default class Collector {
   public scanningPath: string;
@@ -50,17 +51,20 @@ export default class Collector {
   }
 
   public async collectHistory(historyNumberOfDays: number) {
-    // const codeQualityInformationHistory = new CodeQualityInformationHistory();
-    // const gitPath = pathHelper.getGitRepositoryPath(this.scanningPath);
-    // const repository = await nodeGit.Repository.open(gitPath);
-    // const firstCommitOnMaster = await repository.getMasterCommit();
-    // const history = firstCommitOnMaster.history();
-    // const commits = await this.getRelevantCommit(firstCommitOnMaster, history, historyNumberOfDays);
-    // for (let commit of commits) {
-    //   const codeQualityInformation = await this.collectDebtFromCommit(commit);
-    //   codeQualityInformationHistory.addCodeQualityInformation(codeQualityInformation);
-    // }
-    // return codeQualityInformationHistory;
+    const debtHistory = new DebtHistory();
+
+    const gitPath = pathHelper.getGitRepositoryPath(this.scanningPath);
+    const repository = await nodeGit.Repository.open(gitPath);
+    const firstCommitOnMaster = await repository.getMasterCommit();
+    const history = firstCommitOnMaster.history();
+    const commits = await this.getRelevantCommit(firstCommitOnMaster, history, historyNumberOfDays);
+    for (let commit of commits) {
+      console.log({ commit: commit.sha() });
+      const debt = await this.collectDebtFromCommit(commit);
+      debtHistory.addDebtInformation(debt, commit.time().toString());
+    }
+
+    return debtHistory;
   }
 
   //TODO quality "Maximet: put the function navigating through the git history in a service"

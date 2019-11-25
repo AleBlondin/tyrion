@@ -3,6 +3,7 @@ export type DebtItemInterface = {
   fileNames: string[];
   fixCost: number;
   id: string;
+  numberOfChanges: number;
   numberOfOccurences: number;
   timeLost: number;
   addDebtItem: (debtItem: DebtItemInterface) => void;
@@ -11,6 +12,11 @@ export type DebtItemInterface = {
 export type DebtInterface = {
   debtTypes: { [type: string]: DebtItemInterface };
   addDebtItem: (debtItem: DebtItemInterface) => void;
+};
+
+export type DebtHistoryInterface = {
+  debts: { [commitTime: string]: DebtInterface };
+  addDebtInformation: (debt: DebtInterface, commitTime: string) => void;
 };
 
 export type CodeQualityInformationInterface = {

@@ -45,41 +45,29 @@ const config = new Config(scanDirectory);
 
 const collector = Collector.createFromConfig(scanDirectory, program.filter, config);
 
-switch (true) {
-  // case Boolean(program.evolution):
-  // const historyNumberOfDays = isNaN(parseInt(program.evolution))
-  //   ? HISTORY_DEFAULT_NUMBER_OF_DAYS
-  //   : program.evolution;
-  // console.info(
-  //   'Tyrion will scan ' + historyNumberOfDays + ' days backward from the last commit on master',
-  // );
-  // const codeQualityInformationHistory = collector.collectHistory(historyNumberOfDays);
+const renderGraph = (debt: DebtInterface) => {
+  CodeQualityInformationDisplayer.display(debt);
+  const reportPath = TemplateRenderer.renderBubbleGraph(debt);
+  console.log(colors.green('The report was generated at ' + reportPath));
 
-  // codeQualityInformationHistory
-  //   .then((codeQualityInformationHistory: CodeQualityInformationHistory): void => {
-  //     const reportPath = TemplateRenderer.renderHistoryGraph(
-  //       codeQualityInformationHistory,
-  //       config.standard,
-  //     );
-  //     console.log(colors.green('The report was generated at ' + reportPath));
+  if (!program.nobrowser) {
+    open(reportPath).catch((error): void => console.error(error));
+  }
+};
 
-  //     if (!program.nobrowser) {
-  //       open(reportPath).catch((error): void => console.error(error));
-  //     }
-  //   })
-  //   .catch((error): void => console.error(error));
-  // break;
-  default:
-    const debtPromise = collector.collect();
-    debtPromise
-      .then((debt: DebtInterface): void => {
-        CodeQualityInformationDisplayer.display(debt);
-        const reportPath = TemplateRenderer.renderBubbleGraph(debt);
-        console.log(colors.green('The report was generated at ' + reportPath));
-
-        if (!program.nobrowser) {
-          open(reportPath).catch((error): void => console.error(error));
-        }
-      })
-      .catch((error): void => console.error(error));
+if (Boolean(program.evolution)) {
+  const historyNumberOfDays = isNaN(parseInt(program.evolution))
+    ? HISTORY_DEFAULT_NUMBER_OF_DAYS
+    : program.evolution;
+  console.info(
+    'Tyrion will scan ' + historyNumberOfDays + ' days backward from the last commit on master',
+  );
+  const debtPromise = collector.collectHistory(historyNumberOfDays);
+  debtPromise.then(aggregatedDebt => {
+    renderGraph(aggregatedDebt.getAggregatedDebt());
+  });
+} else {
+  collector.collect().then(aggregatedDebt => {
+    renderGraph(aggregatedDebt);
+  });
 }
