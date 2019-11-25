@@ -23,9 +23,11 @@ export const parseLineToDebtItem = (line: string, fileName: string): DebtItemInt
 
   const debtProperties: Partial<{ [propertyName in ACCEPTED_PROPERTIES]: string }> = line
     .split(' ')
-    .filter(element => element.includes(':'))
+    .filter((element, index) => index === 0 || element.includes(':'))
     .reduce(
       (properties, element) => {
+        if (!element.includes(':')) return { ...properties, id: element };
+
         const [property, value] = element.split(':');
         return ACCEPTED_PROPERTIES[property as ACCEPTED_PROPERTIES]
           ? { ...properties, [property]: value }
