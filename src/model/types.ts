@@ -1,29 +1,16 @@
 export type DebtItemInterface = {
-  category: string;
-  comment: string;
-  fileName: string;
+  bugs: number;
+  fileNames: string[];
+  fixCost: number;
   id: string;
-  type: string;
-  price?: number;
-};
-
-export type PricerInterface = {
-  getPrice: (debt: DebtItemInterface) => number;
-};
-
-export type DebtTypeInterface = {
-  debtItems: DebtItemInterface[];
-  debtScore: number;
-  type: string;
+  numberOfOccurences: number;
+  timeLost: number;
   addDebtItem: (debtItem: DebtItemInterface) => void;
 };
 
 export type DebtInterface = {
-  debtTypes: { [type: string]: DebtTypeInterface };
-  debtScore: number;
-  pricer: PricerInterface;
+  debtTypes: { [type: string]: DebtItemInterface };
   addDebtItem: (debtItem: DebtItemInterface) => void;
-  getDebtScoreByType: (type: string) => number;
 };
 
 export type CodeQualityInformationInterface = {
@@ -41,7 +28,6 @@ export interface PricesInterface {
 }
 
 export type ConfigInterface = {
-  prices: PricesInterface;
   standard: number;
   ignorePaths: string[];
 };

@@ -32,7 +32,11 @@ program.parse(process.argv);
 let scanDirectory = program.path;
 
 if (!scanDirectory) {
-  console.warn(colors.red('⚠ No path was specified using the -p options. Tyrion will scan the current directory ⚠'));
+  console.warn(
+    colors.red(
+      '⚠ No path was specified using the -p options. Tyrion will scan the current directory ⚠',
+    ),
+  );
   scanDirectory = '.';
 }
 
@@ -42,13 +46,20 @@ const collector = Collector.createFromConfig(scanDirectory, program.filter, conf
 
 switch (true) {
   case Boolean(program.evolution):
-    const historyNumberOfDays = isNaN(parseInt(program.evolution)) ? HISTORY_DEFAULT_NUMBER_OF_DAYS : program.evolution;
-    console.info('Tyrion will scan ' + historyNumberOfDays + ' days backward from the last commit on master');
+    const historyNumberOfDays = isNaN(parseInt(program.evolution))
+      ? HISTORY_DEFAULT_NUMBER_OF_DAYS
+      : program.evolution;
+    console.info(
+      'Tyrion will scan ' + historyNumberOfDays + ' days backward from the last commit on master',
+    );
     const codeQualityInformationHistory = collector.collectHistory(historyNumberOfDays);
 
     codeQualityInformationHistory
       .then((codeQualityInformationHistory: CodeQualityInformationHistory): void => {
-        const reportPath = TemplateRenderer.renderHistoryGraph(codeQualityInformationHistory, config.standard);
+        const reportPath = TemplateRenderer.renderHistoryGraph(
+          codeQualityInformationHistory,
+          config.standard,
+        );
         console.log(colors.green('The report was generated at ' + reportPath));
 
         if (!program.nobrowser) {
@@ -62,7 +73,7 @@ switch (true) {
     codeQualityInformationPromise
       .then((codeQualityInformation: CodeQualityInformation): void => {
         CodeQualityInformationDisplayer.display(codeQualityInformation);
-        const reportPath = TemplateRenderer.renderTypeParetoGraph(codeQualityInformation.debt.debtTypes);
+        const reportPath = TemplateRenderer.renderBubbleGraph(codeQualityInformation);
         console.log(colors.green('The report was generated at ' + reportPath));
 
         if (!program.nobrowser) {

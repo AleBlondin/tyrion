@@ -1,6 +1,6 @@
 import Table from 'cli-table';
 import colors from 'colors';
-import { DebtItemInterface, DebtTypeInterface, CodeQualityInformationInterface, DebtInterface } from '../model/types';
+import { CodeQualityInformationInterface, DebtInterface } from '../model/types';
 
 export default class CodeQualityInformationDisplayer {
   public static display(codeQualityInformation: CodeQualityInformationInterface): void {
@@ -14,20 +14,24 @@ export default class CodeQualityInformationDisplayer {
     console.info(colors.green('\n ♻️♻️♻️ Debt Information ♻️♻️♻️'));
 
     const table = new Table({
-      head: [colors.bold('Type'), colors.bold('Score'), colors.bold('File'), colors.bold('Comment')],
+      head: [
+        colors.bold('Type'),
+        colors.bold('Files'),
+        colors.bold('Bugs'),
+        colors.bold('Time lost'),
+        colors.bold('Fix cost'),
+      ],
     });
 
-    debt.debtTypes.forEach((debtType: DebtTypeInterface): void => {
-      const debtItemsNumber = debtType.debtItems.length;
-      debtType.debtItems.map((debtItem: DebtItemInterface): void => {
-        table.push([debtItem.type, debt.pricer.getPrice(debtItem), debtItem.fileName, debtItem.comment]);
-      });
-      totalItems += debtItemsNumber;
+    Object.keys(debt.debtTypes).forEach(type => {
+      const { id, fileNames, bugs, fixCost, timeLost } = debt.debtTypes[type];
+      table.push([id, fileNames, fixCost, bugs, timeLost, fixCost]);
+
+      totalItems += 1;
     });
 
     table.push([
       colors.red(colors.bold('Total')),
-      colors.red(colors.bold('' + debt.debtScore)),
       colors.red(colors.bold(totalItems + ' debt items')),
     ]);
 

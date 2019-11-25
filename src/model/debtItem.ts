@@ -3,33 +3,39 @@ import uuid from 'uuid';
 import { DebtItemInterface } from './types';
 
 export default class DebtItem implements DebtItemInterface {
+  public bugs: number;
+  public fileNames: string[];
+  public fixCost: number;
   public id: string;
-  public type: string;
-  public category: string;
-  public comment: string;
-  public fileName: string;
-  public price?: number;
+  public numberOfOccurences: number;
+  public timeLost: number;
 
   public constructor({
     id,
-    type,
-    category,
-    comment,
-    fileName,
-    price,
+    fileNames,
+    fixCost = 1,
+    bugs = 0,
+    timeLost = 0,
   }: {
     id?: string;
-    type: string;
-    category: string;
-    comment: string;
-    fileName: string;
-    price?: number;
+    fileNames: string[];
+    fixCost?: number;
+    bugs?: number;
+    timeLost?: number;
   }) {
     this.id = id || uuid();
-    this.type = type;
-    this.category = category;
-    this.comment = comment;
-    this.fileName = fileName;
-    this.price = price;
+    this.fileNames = fileNames;
+    this.fixCost = fixCost;
+    this.bugs = bugs;
+    this.timeLost = timeLost;
+    this.numberOfOccurences = 1;
+  }
+
+  public addDebtItem(debtItem: DebtItemInterface) {
+    this.fileNames = [...this.fileNames, ...debtItem.fileNames];
+    this.bugs += debtItem.bugs;
+    this.fixCost += debtItem.fixCost;
+    this.numberOfOccurences += 1;
+    this.timeLost += debtItem.timeLost;
   }
 }

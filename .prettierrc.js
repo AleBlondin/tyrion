@@ -3,5 +3,5 @@ module.exports = {
     "trailingComma": "all",
     "jsxBracketSameLine": false,
     "bracketSpacing": true,
-    "printWidth": 120
+    "printWidth": 100
 };

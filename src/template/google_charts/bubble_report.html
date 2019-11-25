@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {packages: ['corechart', 'bar']});
+
+      const debtData =  [
+        ["Type","Effective Impact", "Future Impact", "Bug", "Fix cost"],
+        <% Object.keys(debt.debtTypes).forEach(function(debtItem) {%>[
+          "<%- debt.debtTypes[debtItem].id %>",
+          <%- debt.debtTypes[debtItem].bugs * 10 + debt.debtTypes[debtItem].timeLost %>,
+          <%- debt.debtTypes[debtItem].numberOfOccurences %>,
+          <%- debt.debtTypes[debtItem].bugs %>,
+          <%- debt.debtTypes[debtItem].fixCost %>],
+      <% }); %>];
+
+      var options = {
+        title: 'Tyrion bubble graph',
+        hAxis: {
+          title: 'Effective Impact',
+          viewWindow: {
+            min: 0,
+          },
+        },
+        vAxis: {
+          title: 'Future Impact',
+          viewWindow: {
+            min: 0,
+          },
+        },
+        colorAxis: {
+          colors: ['yellow', 'red'],
+          legend: {
+            position: 'none'
+          }
+        },
+        bubble: {
+          textStyle: {
+            auraColor: 'none',
+            fontSize: 11
+          }
+        }
+      };
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(debtData);
+        var chart = new google.visualization.BubbleChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      google.charts.setOnLoadCallback(drawChart);
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 1400px; height: 600px"></div>
+  </body>
+</html>

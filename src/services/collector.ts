@@ -1,4 +1,3 @@
-import DebtItem from '../model/debtItem';
 import Debt from '../model/debt';
 import { Commit, TreeEntry } from 'nodegit';
 import { HistoryEventEmitter } from 'nodegit/commit';
@@ -6,42 +5,34 @@ import dateHelper from '../utils/dateHelper';
 import fs from 'fs';
 import glob from 'glob';
 import nodeGit from 'nodegit';
-import isEmpty from 'lodash/isEmpty';
 
-import { Pricer } from './pricer';
 import pathHelper from '../utils/pathHelper';
 import CodeQualityInformation from '../model/codeQualityInformation';
 import CodeQualityInformationHistory from '../model/codeQualityInformationHistory';
 import {
-  PricerInterface,
-  DebtItemInterface,
   CodeQualityInformationInterface,
   CodeQualityInformationHistoryInterface,
   ConfigInterface,
 } from '../model/types';
-
-const debtTags = ['@debt', 'TODO', 'FIXME'];
+import { parseLineToDebtItem } from './parser';
 
 export default class Collector {
   public scanningPath: string;
-  private readonly pricer: PricerInterface;
   private readonly filter: string;
   private readonly ignorePaths: string[];
 
-  public constructor(
-    scanningPath: string,
-    ignorePaths: string[] = [],
-    filter: string = '',
-    pricer: PricerInterface = new Pricer(),
-  ) {
+  public constructor(scanningPath: string, ignorePaths: string[] = [], filter: string = '') {
     this.scanningPath = scanningPath;
     this.filter = filter;
-    this.pricer = pricer;
     this.ignorePaths = ignorePaths;
   }
 
-  public static createFromConfig(scanningPath: string, filter: string, config: ConfigInterface): Collector {
-    return new Collector(scanningPath, config.ignorePaths, filter, new Pricer(config.prices));
+  public static createFromConfig(
+    scanningPath: string,
+    filter: string,
+    config: ConfigInterface,
+  ): Collector {
+    return new Collector(scanningPath, config.ignorePaths, filter);
   }
 
   public async collect(): Promise<CodeQualityInformationInterface> {
@@ -51,7 +42,7 @@ export default class Collector {
     const hiddenFiles = glob.sync(allHiddenFiles, { nodir: true });
 
     const allFiles = notHiddenFiles.concat(hiddenFiles);
-    const debt = new Debt(this.pricer);
+    const debt = new Debt();
     const codeQualityInformation = new CodeQualityInformation(debt);
 
     const targetedFiles = allFiles.filter(
@@ -65,7 +56,9 @@ export default class Collector {
     return codeQualityInformation;
   }
 
-  public async collectHistory(historyNumberOfDays: number): Promise<CodeQualityInformationHistoryInterface> {
+  public async collectHistory(
+    historyNumberOfDays: number,
+  ): Promise<CodeQualityInformationHistoryInterface> {
     const codeQualityInformationHistory = new CodeQualityInformationHistory();
 
     const gitPath = pathHelper.getGitRepositoryPath(this.scanningPath);
@@ -119,7 +112,7 @@ export default class Collector {
   }
 
   private async collectDebtFromCommit(commit: Commit): Promise<CodeQualityInformationInterface> {
-    const debt = new Debt(this.pricer);
+    const debt = new Debt();
     const codeQualityInformation = new CodeQualityInformation(debt);
     const entries = await this.getFilesFromCommit(commit);
     for (let entry of entries) {
@@ -148,7 +141,10 @@ export default class Collector {
     });
   }
 
-  private async parseEntry(entry: TreeEntry, codeQualityInformation: CodeQualityInformationInterface): Promise<void> {
+  private async parseEntry(
+    entry: TreeEntry,
+    codeQualityInformation: CodeQualityInformationInterface,
+  ): Promise<void> {
     const those = this;
     return new Promise((resolve): void => {
       const blob = entry.getBlob();
@@ -161,33 +157,19 @@ export default class Collector {
     });
   }
 
+  // @debt price:10 bug:2 timeLost:250
   //TODO: quality "Should split this file into multiple files including one service dedicated to the parsing
-  private parseFile(file: string, fileName: string, codeQualityInformation: CodeQualityInformationInterface): void {
-    let lines: string[] = file.split('\n');
-
-    lines = lines.filter((line): boolean => this.isComment(line));
+  private parseFile(
+    file: string,
+    fileName: string,
+    codeQualityInformation: CodeQualityInformationInterface,
+  ): void {
+    const lines: string[] = file.split('\n').filter(line => this.isComment(line));
 
     for (let line of lines) {
-      const debtTag = this.getTag(line, debtTags);
-      if (debtTag) {
-        const debtItem = this.parseDebtLine(line, fileName, debtTag);
-        if (!this.filter || (this.filter && debtItem.type === this.filter)) {
-          codeQualityInformation.debt.addDebtItem(debtItem);
-        }
-      }
-    }
-  }
-
-  /**
-   * Check if the line contains a Tag
-   *
-   * @param line
-   * @param tags
-   */
-  private getTag(line: string, tags: string[]): string | undefined {
-    for (let tag of tags) {
-      if (line.indexOf(tag) >= 0) {
-        return tag;
+      const debtItem = parseLineToDebtItem(line, fileName);
+      if (debtItem) {
+        codeQualityInformation.debt.addDebtItem(debtItem);
       }
     }
   }
@@ -201,64 +183,5 @@ export default class Collector {
     const firstChar = lineTrimmed.charAt(0);
 
     return firstChar === '#' || firstChar === '*' || firstChar === '/';
-  }
-
-  /**
-   * Parse the different elements in a debt line.
-   * A debt line may have a comment at the end.
-   *
-   * @param line
-   * @param fileName
-   */
-  private parseDebtLine(line: string, fileName: string, debtTag: string): DebtItemInterface {
-    const lineWithoutDebtTag = line.substr(line.indexOf(debtTag) + debtTag.length + 1);
-
-    const comment = this.parseDebtLineComment(line);
-
-    const lineWithoutDebtAndComment =
-      comment === '' ? lineWithoutDebtTag : lineWithoutDebtTag.substr(0, lineWithoutDebtTag.indexOf('"')).trim();
-
-    // lineElements can be "DEBT_TYPE:SUB_TYPE" or "DEBT_TYPE:SUB_TYPE price:PRICE"
-    const lineElements = lineWithoutDebtAndComment.split(' ');
-
-    // Process DEBT_TYPE:SUB_TYPE
-    const types = lineElements[0].split(':');
-    const debtType = types[0] || 'OTHER';
-    const debtCategory = types[1] ? types[1] : '';
-
-    // Process price:PRICE
-    const price = this.getPrice(lineElements);
-
-    return new DebtItem({
-      type: debtType,
-      category: debtCategory,
-      comment,
-      fileName,
-      price,
-    });
-  }
-
-  /**
-   * Return the comment of a line debt if any.
-   *
-   * @param line . A line without the @debt tag in it, like : bug:error price:50 "awesome comment"
-   */
-  private parseDebtLineComment(line: string): string {
-    const comment = line.substr(line.indexOf('"') + 1);
-    if (comment.indexOf('"') >= 0) {
-      return comment.substr(0, comment.indexOf('"'));
-    }
-    return '';
-  }
-
-  /**
-   * If exists, returns the price from a list of lineElements
-   *
-   * @param lineElements ["DEBT_TYPE:SUB_TYPE", "price:50"] or ["DEBT_TYPE:SUB_TYPE"]
-   */
-  private getPrice(lineElements: string[]): number | undefined {
-    const priceAnnotation = lineElements.filter((lineElement): boolean => lineElement.startsWith('price:'));
-
-    return !isEmpty(priceAnnotation) ? parseInt(priceAnnotation[0].split(':')[1]) : undefined;
   }
 }
