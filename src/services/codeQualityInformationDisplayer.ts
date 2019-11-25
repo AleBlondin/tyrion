@@ -1,11 +1,11 @@
 import Table from 'cli-table';
 import colors from 'colors';
-import { CodeQualityInformationInterface, DebtInterface } from '../model/types';
+import { DebtInterface } from '../model/types';
 
 export default class CodeQualityInformationDisplayer {
-  public static display(codeQualityInformation: CodeQualityInformationInterface): void {
-    if (codeQualityInformation.debt) {
-      this.displayDebtSummary(codeQualityInformation.debt);
+  public static display(debt: DebtInterface): void {
+    if (debt) {
+      this.displayDebtSummary(debt);
     }
   }
 

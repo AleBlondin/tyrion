@@ -3,10 +3,7 @@ import path from 'path';
 import _ from 'lodash';
 
 import DateHelper from '../utils/dateHelper';
-import {
-  CodeQualityInformationHistoryInterface,
-  CodeQualityInformationInterface,
-} from '../model/types';
+import { CodeQualityInformationHistoryInterface, DebtInterface } from '../model/types';
 
 const reportName = 'tyrion_report.html';
 
@@ -25,7 +22,10 @@ export default class TemplateRenderer {
     codeQualityInformationHistory: CodeQualityInformationHistoryInterface,
     standard: number,
   ): string {
-    const file = fs.readFileSync(path.resolve(__dirname, '../template/google_charts/history_report.html'), 'utf-8');
+    const file = fs.readFileSync(
+      path.resolve(__dirname, '../template/google_charts/history_report.html'),
+      'utf-8',
+    );
 
     const debtGraphData = [];
 
@@ -41,16 +41,7 @@ export default class TemplateRenderer {
     return this.renderGraph(file, { dataDebt: debtGraphData, standard: standard });
   }
 
-  public static renderTypeParetoGraph(debtTypes: {}): string {
-    const file = fs.readFileSync(
-      path.resolve(__dirname, '../template/google_charts/pareto_by_debt_type_report.html'),
-      'utf-8',
-    );
-
-    return this.renderGraph(file, { dataDebt: debtTypes });
-  }
-
-  public static renderBubbleGraph({ debt }: CodeQualityInformationInterface) {
+  public static renderBubbleGraph(debt: DebtInterface) {
     const file = fs.readFileSync(
       path.resolve(__dirname, '../template/google_charts/bubble_report.html'),
       'utf-8',
