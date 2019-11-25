@@ -16,14 +16,10 @@ enum ACCEPTED_PROPERTIES {
  * @param line
  * @param fileName
  */
-export const parseLineToDebtItem = (line: string, fileName: string): DebtItemInterface | null => {
-  const debtTag = line.includes(DEBT_TAG);
-
-  if (!debtTag) return null;
-
+export const parseLine = (line: string) => {
   const debtProperties: Partial<{ [propertyName in ACCEPTED_PROPERTIES]: string }> = line
     .split(' ')
-    .filter((element, index) => index === 0 || element.includes(':'))
+    .filter((element, index) => index === 2 || element.includes(':')) // id must be at third position, after "//" and "@debt"
     .reduce(
       (properties, element) => {
         if (!element.includes(':')) return { ...properties, id: element };
@@ -41,5 +37,15 @@ export const parseLineToDebtItem = (line: string, fileName: string): DebtItemInt
   const fixCost = debtProperties.fixCost != null ? Number(debtProperties.fixCost) : undefined;
   const timeLost = debtProperties.timeLost != null ? Number(debtProperties.timeLost) : undefined;
 
-  return new DebtItem({ fileNames: [fileName], id, bugs, fixCost, timeLost });
+  return { id, bugs, fixCost, timeLost };
+};
+
+export const parseLineToDebtItem = (line: string, fileName: string): DebtItemInterface | null => {
+  const debtTag = line.includes(DEBT_TAG);
+
+  if (!debtTag) return null;
+
+  const debtProperties = parseLine(line);
+
+  return new DebtItem({ fileNames: [fileName], ...debtProperties });
 };
