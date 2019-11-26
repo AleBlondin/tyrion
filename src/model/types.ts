@@ -1,3 +1,5 @@
+import { Commit } from 'nodegit';
+
 export type DebtItemInterface = {
   bugs: number;
   fileNames: string[];
@@ -16,7 +18,7 @@ export type DebtInterface = {
 
 export type DebtHistoryInterface = {
   debts: { [commitTime: string]: DebtInterface };
-  addDebtInformation: (debt: DebtInterface, commitTime: string) => void;
+  addDebtInformation: (debt: DebtInterface, commit: Commit) => void;
 };
 
 export type CodeQualityInformationInterface = {

@@ -61,7 +61,7 @@ export default class Collector {
     for (let commit of commits) {
       console.log({ commit: commit.sha() });
       const debt = await this.collectDebtFromCommit(commit);
-      debtHistory.addDebtInformation(debt, commit.time().toString());
+      debtHistory.addDebtInformation(debt, commit);
     }
 
     return debtHistory;

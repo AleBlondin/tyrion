@@ -9,7 +9,7 @@
         <% Object.keys(debt.debtTypes).forEach(function(debtItem) {%>[
           "<%- debt.debtTypes[debtItem].id %>",
           <%- debt.debtTypes[debtItem].bugs * 10 + debt.debtTypes[debtItem].timeLost %>,
-          <%- debt.debtTypes[debtItem].numberOfOccurences %>,
+          <%- debt.debtTypes[debtItem].numberOfOccurences * debt.debtTypes[debtItem].numberOfOccurences %>,
           <%- debt.debtTypes[debtItem].bugs %>,
           <%- debt.debtTypes[debtItem].fixCost %>],
       <% }); %>];
