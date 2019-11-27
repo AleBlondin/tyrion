@@ -7,7 +7,7 @@
       const MAX_BUBBLE_SIZE = 1;
 
       const debtData =  [
-        ["Type","Effective Impact", "Future Impact", "Bug", "Fix cost"],
+        ["Type","Effective Impact", "Future Impact", "Bugs", "Fix cost"],
         <% Object.keys(debt.debtTypes).forEach(function(debtItem) {%>[
           "<%- debt.debtTypes[debtItem].id %>",
           <%- debt.debtTypes[debtItem].getEffectiveImpact() %>,
@@ -41,7 +41,8 @@
         bubble: {
           textStyle: {
             auraColor: 'none',
-            fontSize: 11
+            color: "transparent",
+            fontSize: 11,
           }
         }
       };

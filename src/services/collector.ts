@@ -52,7 +52,7 @@ export default class Collector {
 
   public async collectHistory(historyNumberOfDays: number) {
     const debtHistory = new DebtHistory();
-    this.collect().then(currentDebt => (debtHistory.currentDebt = currentDebt));
+    debtHistory.currentDebt = await this.collect();
 
     const gitPath = pathHelper.getGitRepositoryPath(this.scanningPath);
     const repository = await nodeGit.Repository.open(gitPath);
@@ -60,7 +60,6 @@ export default class Collector {
     const history = firstCommitOnMaster.history();
     const commits = await this.getRelevantCommit(firstCommitOnMaster, history, historyNumberOfDays);
     for (let commit of commits) {
-      console.log({ commit: commit.sha() });
       const debt = await this.collectDebtFromCommit(commit);
       debtHistory.addDebtInformation(debt, commit);
     }

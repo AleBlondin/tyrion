@@ -25,7 +25,6 @@ export default class DebtHistory implements DebtHistoryInterface {
     const commitHashs = Object.keys(this.commits);
 
     if (!commitHashs) return null;
-    console.log({ commitHashs });
 
     return commitHashs.sort((hash1, hash2) => this.commits[hash2] - this.commits[hash1])[0];
   }
@@ -33,10 +32,10 @@ export default class DebtHistory implements DebtHistoryInterface {
   public getAggregatedDebt(): DebtInterface {
     let aggregatedDebt = new Debt();
     const latestCommitHash = this.getLatestCommitHash();
-    console.log({ latestCommitHash });
     if (!latestCommitHash) return aggregatedDebt;
 
     const { [latestCommitHash]: latestDebt, ...commitsToAggregate } = this.debts;
+    aggregatedDebt = Object.assign(this.currentDebt);
 
     Object.keys(commitsToAggregate).forEach(commitTime => {
       const debtTypes = this.debts[commitTime].debtTypes;
@@ -47,7 +46,6 @@ export default class DebtHistory implements DebtHistoryInterface {
         }
       });
     });
-    console.log({ aggregatedDebt });
 
     return aggregatedDebt;
   }
