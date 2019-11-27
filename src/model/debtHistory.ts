@@ -5,6 +5,7 @@ import Debt from './debt';
 
 export default class DebtHistory implements DebtHistoryInterface {
   public debts: { [commitHash: string]: DebtInterface };
+  public currentDebt: DebtInterface;
   public commits: {
     [commitHash: string]: number;
   };
@@ -12,6 +13,7 @@ export default class DebtHistory implements DebtHistoryInterface {
   public constructor() {
     this.commits = {};
     this.debts = {};
+    this.currentDebt = new Debt();
   }
 
   public addDebtInformation(debt: DebtInterface, commit: Commit): void {
@@ -35,12 +37,11 @@ export default class DebtHistory implements DebtHistoryInterface {
     if (!latestCommitHash) return aggregatedDebt;
 
     const { [latestCommitHash]: latestDebt, ...commitsToAggregate } = this.debts;
-    aggregatedDebt = Object.assign(latestDebt);
 
     Object.keys(commitsToAggregate).forEach(commitTime => {
       const debtTypes = this.debts[commitTime].debtTypes;
       Object.keys(debtTypes).forEach(debtType => {
-        const existingDebtType = aggregatedDebt.debtTypes[debtType];
+        const existingDebtType = this.currentDebt.debtTypes[debtType];
         if (existingDebtType) {
           existingDebtType.numberOfChanges += 1;
         }
