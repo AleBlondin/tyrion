@@ -12,7 +12,7 @@ const a = 1 ? 2 + 3 : 7;
  */
 
 /**
- * @debt id:other-debt2 bugs:1 fixCost:3 timeLost:2
+ * @debt id:other-debt2 fixCost:3 timeLost:2
  *
  * This file is not easy to understand and needs improvements
  */
@@ -30,7 +30,7 @@ const a = 1 ? 2 + 3 : 7;
  */
 
 /**
- * @debt id:other-debt5 bugs:1 fixCost:3 timeLost:20
+ * @debt id:other-debt5 fixCost:3 timeLost:20
  *
  * This file is not easy to understand and needs improvements
  */

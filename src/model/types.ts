@@ -9,11 +9,15 @@ export type DebtItemInterface = {
   numberOfOccurences: number;
   timeLost: number;
   addDebtItem: (debtItem: DebtItemInterface) => void;
+  getEffectiveImpact: () => number;
+  getFutureImpact: () => number;
 };
 
 export type DebtInterface = {
   debtTypes: { [type: string]: DebtItemInterface };
   addDebtItem: (debtItem: DebtItemInterface) => void;
+  getMaxEffectiveImpact: () => number;
+  getMaxFutureImpact: () => number;
 };
 
 export type DebtHistoryInterface = {

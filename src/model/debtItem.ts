@@ -2,6 +2,9 @@ import uuid from 'uuid';
 
 import { DebtItemInterface } from './types';
 
+const BUGS_FACTOR_IN_EFFECTIVE_IMPACT = 10;
+const TIME_LOST_FACTOR_IN_EFFECTIVE_IMPACT = 1;
+
 export default class DebtItem implements DebtItemInterface {
   public bugs: number;
   public fileNames: string[];
@@ -30,7 +33,7 @@ export default class DebtItem implements DebtItemInterface {
     this.bugs = bugs;
     this.timeLost = timeLost;
     this.numberOfOccurences = 1;
-    this.numberOfChanges = 1;
+    this.numberOfChanges = 0;
   }
 
   public addDebtItem(debtItem: DebtItemInterface) {
@@ -39,5 +42,16 @@ export default class DebtItem implements DebtItemInterface {
     this.fixCost += debtItem.fixCost;
     this.numberOfOccurences += 1;
     this.timeLost += debtItem.timeLost;
+  }
+
+  public getEffectiveImpact() {
+    return (
+      this.timeLost * TIME_LOST_FACTOR_IN_EFFECTIVE_IMPACT +
+      this.bugs * BUGS_FACTOR_IN_EFFECTIVE_IMPACT
+    );
+  }
+
+  public getFutureImpact() {
+    return this.numberOfOccurences * (this.numberOfChanges + 1);
   }
 }

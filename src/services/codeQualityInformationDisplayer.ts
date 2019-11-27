@@ -19,13 +19,31 @@ export default class CodeQualityInformationDisplayer {
         colors.bold('Files'),
         colors.bold('Bugs'),
         colors.bold('Time lost'),
+        colors.bold('Number of occurences'),
+        colors.bold('Number of changes'),
         colors.bold('Fix cost'),
       ],
     });
 
     Object.keys(debt.debtTypes).forEach(type => {
-      const { id, fileNames, bugs, fixCost, timeLost } = debt.debtTypes[type];
-      table.push([id, fileNames, fixCost, bugs, timeLost, fixCost]);
+      const {
+        id,
+        fileNames,
+        bugs,
+        fixCost,
+        timeLost,
+        numberOfOccurences,
+        numberOfChanges,
+      } = debt.debtTypes[type];
+      table.push([
+        id,
+        fileNames,
+        bugs,
+        timeLost,
+        numberOfOccurences,
+        numberOfChanges,
+        fixCost,
+      ]);
 
       totalItems += 1;
     });

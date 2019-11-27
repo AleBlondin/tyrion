@@ -4,12 +4,14 @@
     <script type="text/javascript">
       google.charts.load('current', {packages: ['corechart', 'bar']});
 
+      const MAX_BUBBLE_SIZE = 1;
+
       const debtData =  [
         ["Type","Effective Impact", "Future Impact", "Bug", "Fix cost"],
         <% Object.keys(debt.debtTypes).forEach(function(debtItem) {%>[
           "<%- debt.debtTypes[debtItem].id %>",
-          <%- debt.debtTypes[debtItem].bugs * 10 + debt.debtTypes[debtItem].timeLost %>,
-          <%- debt.debtTypes[debtItem].numberOfOccurences * debt.debtTypes[debtItem].numberOfOccurences %>,
+          <%- debt.debtTypes[debtItem].getEffectiveImpact() %>,
+          <%- debt.debtTypes[debtItem].getFutureImpact() %>,
           <%- debt.debtTypes[debtItem].bugs %>,
           <%- debt.debtTypes[debtItem].fixCost %>],
       <% }); %>];
@@ -20,12 +22,14 @@
           title: 'Effective Impact',
           viewWindow: {
             min: 0,
+            max: <%-debt.getMaxEffectiveImpact() %> + MAX_BUBBLE_SIZE
           },
         },
         vAxis: {
           title: 'Future Impact',
           viewWindow: {
             min: 0,
+            max: <%-debt.getMaxFutureImpact() %> + MAX_BUBBLE_SIZE
           },
         },
         colorAxis: {
