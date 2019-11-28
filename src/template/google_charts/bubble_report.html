@@ -7,7 +7,7 @@
       const MAX_BUBBLE_SIZE = 2;
 
       const debtData =  [
-        ["Type","Effective Impact", "Future Impact", "Bugs", "Fix cost"],
+        ["Type","Impact", "Surface", "Bugs", "Fix cost"],
         <% Object.keys(debt.debtTypes).forEach(function(debtItem) {%>[
           "<%- debt.debtTypes[debtItem].id %>",
           <%- debt.debtTypes[debtItem].getEffectiveImpact() %>,
@@ -19,14 +19,14 @@
       var options = {
         title: 'Tyrion bubble graph',
         hAxis: {
-          title: 'Effective Impact',
+          title: 'Impact',
           viewWindow: {
             min: -2,
             max: <%-debt.getMaxEffectiveImpact() %> + MAX_BUBBLE_SIZE
           },
         },
         vAxis: {
-          title: 'Future Impact',
+          title: 'Surface',
           viewWindow: {
             min: -2,
             max: <%-debt.getMaxFutureImpact() %> + MAX_BUBBLE_SIZE
@@ -42,7 +42,6 @@
           textStyle: {
             auraColor: 'none',
             color: "transparent",
-            fontSize: 11,
           }
         }
       };

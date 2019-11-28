@@ -40,6 +40,5 @@ export interface PricesInterface {
 }
 
 export type ConfigInterface = {
-  standard: number;
   ignorePaths: string[];
 };

@@ -9,9 +9,7 @@ import open from 'open';
 import Collector from './services/collector';
 import Config from './services/config';
 import TemplateRenderer from './services/templateRenderer';
-import CodeQualityInformationDisplayer from './services/codeQualityInformationDisplayer';
-import CodeQualityInformation from './model/codeQualityInformation';
-import CodeQualityInformationHistory from './model/codeQualityInformationHistory';
+import { display } from './services/displayer';
 import { DebtInterface } from './model/types';
 
 const HISTORY_DEFAULT_NUMBER_OF_DAYS = 28;
@@ -46,7 +44,7 @@ const config = new Config(scanDirectory);
 const collector = Collector.createFromConfig(scanDirectory, program.filter, config);
 
 const renderGraph = (debt: DebtInterface) => {
-  CodeQualityInformationDisplayer.display(debt);
+  display(debt);
   const reportPath = TemplateRenderer.renderBubbleGraph(debt);
   console.log(colors.green('The report was generated at ' + reportPath));
 

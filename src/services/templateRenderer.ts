@@ -1,44 +1,20 @@
 import fs from 'fs';
 import path from 'path';
-import _ from 'lodash';
+import renderTemplate from 'lodash/template';
 
-import DateHelper from '../utils/dateHelper';
-import { CodeQualityInformationHistoryInterface, DebtInterface } from '../model/types';
+import { DebtInterface } from '../model/types';
 
 const reportName = 'tyrion_report.html';
 
 export default class TemplateRenderer {
   private static renderGraph(template: string, data: {}): string {
-    const compiled = _.template(template.toString());
+    const compiled = renderTemplate(template.toString());
     const htmlGraph = compiled(data);
     const reportPath = path.resolve(reportName);
 
     fs.writeFileSync(reportPath, htmlGraph);
 
     return reportPath;
-  }
-
-  public static renderHistoryGraph(
-    codeQualityInformationHistory: CodeQualityInformationHistoryInterface,
-    standard: number,
-  ): string {
-    const file = fs.readFileSync(
-      path.resolve(__dirname, '../template/google_charts/history_report.html'),
-      'utf-8',
-    );
-
-    const debtGraphData = [];
-
-    for (let codeQualityInformation of codeQualityInformationHistory.codeQualityInformationBag) {
-      const debtGraphDataPoint = {
-        date: DateHelper.getDateAsHtmlTemplate(codeQualityInformation.commitDateTime),
-        // debtScore: codeQualityInformation.debt.debtScore,
-      };
-
-      debtGraphData.push(debtGraphDataPoint);
-    }
-
-    return this.renderGraph(file, { dataDebt: debtGraphData, standard: standard });
   }
 
   public static renderBubbleGraph(debt: DebtInterface) {

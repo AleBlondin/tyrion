@@ -3,12 +3,10 @@ import path from 'path';
 import { ConfigInterface } from '../model/types';
 
 export interface TyrionConfigInterface {
-  standard: number;
   ignorePath: string[];
 }
 
 export default class Config implements ConfigInterface {
-  public readonly standard: number;
   public readonly ignorePaths: string[];
   private readonly config: TyrionConfigInterface;
 
@@ -29,7 +27,6 @@ export default class Config implements ConfigInterface {
       this.config = defaultConfig as TyrionConfigInterface;
     }
 
-    this.standard = this.config.standard;
     this.ignorePaths = this.config.ignorePath;
   }
 }

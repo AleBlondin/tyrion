@@ -144,8 +144,6 @@ export default class Collector {
     });
   }
 
-  // @debt price:10 bug:2 timeLost:250
-  //TODO: quality "Should split this file into multiple files including one service dedicated to the parsing
   private parseFile(file: string, fileName: string, debt: DebtInterface): void {
     const lines: string[] = file.split('\n').filter(line => this.isComment(line));
 
