@@ -19,7 +19,10 @@ enum ACCEPTED_PROPERTIES {
 export const parseLine = (line: string) => {
   const debtProperties: Partial<{ [propertyName in ACCEPTED_PROPERTIES]: string }> = line
     .split(' ')
-    .filter((element, index) => index === 2 || element.includes(':')) // id must be at third position, after "//" and "@debt"
+    .filter(element => element !== '')
+    .filter(
+      (element, index) => (index === 2 || element.includes(':')),
+    ) // id must be at third position, after "//" and "@debt"
     .reduce(
       (properties, element) => {
         if (!element.includes(':')) return { ...properties, id: element };

@@ -45,20 +45,22 @@ export default class PathHelper {
    * @param pathPattern
    */
   private static isFileMatchPathPattern(path: string, pathPattern: string): boolean {
-    if (pathPattern.indexOf('./') !== 0) {
-      pathPattern = './' + pathPattern;
-    }
+    // if (pathPattern.indexOf('./') !== 0) {
+    //   pathPattern = './' + pathPattern;
+    // }
 
-    // The only relevant case where the pathPattern can be a file
-    if (path === pathPattern) {
-      return true;
-    }
+    const pathFolders = path.split('/');
+    const isPathPatternInFolders = pathFolders.includes(pathPattern);
+    const isPathPatternInFileExtension =
+      pathFolders[pathFolders.length - 1].indexOf(pathPattern) !== -1;
+
+    return isPathPatternInFolders || isPathPatternInFileExtension;
 
     // To avoid that services_test/test.ts matches services/
-    if (pathPattern.charAt(pathPattern.length - 1) !== '/') {
-      pathPattern = pathPattern + '/';
-    }
+    // if (pathPattern.charAt(pathPattern.length - 1) !== '/') {
+    //   pathPattern = pathPattern + '/';
+    // }
 
-    return path.indexOf(pathPattern) === 0;
+    // return path.indexOf(pathPattern) !== -1;
   }
 }

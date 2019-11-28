@@ -4,7 +4,7 @@
     <script type="text/javascript">
       google.charts.load('current', {packages: ['corechart', 'bar']});
 
-      const MAX_BUBBLE_SIZE = 1;
+      const MAX_BUBBLE_SIZE = 2;
 
       const debtData =  [
         ["Type","Effective Impact", "Future Impact", "Bugs", "Fix cost"],
@@ -21,14 +21,14 @@
         hAxis: {
           title: 'Effective Impact',
           viewWindow: {
-            min: 0,
+            min: -2,
             max: <%-debt.getMaxEffectiveImpact() %> + MAX_BUBBLE_SIZE
           },
         },
         vAxis: {
           title: 'Future Impact',
           viewWindow: {
-            min: 0,
+            min: -2,
             max: <%-debt.getMaxFutureImpact() %> + MAX_BUBBLE_SIZE
           },
         },

@@ -35,15 +35,7 @@ export default class CodeQualityInformationDisplayer {
         numberOfOccurences,
         numberOfChanges,
       } = debt.debtTypes[type];
-      table.push([
-        id,
-        fileNames,
-        bugs,
-        timeLost,
-        numberOfOccurences,
-        numberOfChanges,
-        fixCost,
-      ]);
+      table.push([id, fileNames, bugs, timeLost, numberOfOccurences, numberOfChanges, fixCost]);
 
       totalItems += 1;
     });
