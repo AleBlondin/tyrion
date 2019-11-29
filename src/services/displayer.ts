@@ -22,6 +22,7 @@ export const displayDebtSummary = (debt: DebtInterface): void => {
       colors.bold('Number of changes'),
       colors.bold('Fix cost'),
     ],
+    colWidths: [50, 100, 10, 10, 10, 10, 10]
   });
 
   Object.keys(debt.debtTypes).forEach(type => {

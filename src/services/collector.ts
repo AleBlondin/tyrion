@@ -56,19 +56,30 @@ export default class Collector {
 
     const gitPath = pathHelper.getGitRepositoryPath(this.scanningPath);
     const repository = await nodeGit.Repository.open(gitPath);
-    const firstCommitOnMaster = await repository.getMasterCommit();
+    const firstCommitOnMaster = await repository.getHeadCommit();
     const history = firstCommitOnMaster.history();
-    const commits = await this.getRelevantCommit(firstCommitOnMaster, history, historyNumberOfDays);
+    const commits = await this.getRelevantCommits(
+      firstCommitOnMaster,
+      history,
+      historyNumberOfDays,
+    );
+
+    let numberOfCommitsRemaining = commits.length;
+    console.log(`${numberOfCommitsRemaining} commits to handle in total`);
     for (let commit of commits) {
+      if (numberOfCommitsRemaining % 5 === 0) {
+        console.log(`${numberOfCommitsRemaining} commits left to handle`);
+      }
       const debt = await this.collectDebtFromCommit(commit);
       debtHistory.addDebtInformation(debt, commit);
+      numberOfCommitsRemaining -= 1;
     }
 
     return debtHistory;
   }
 
   //TODO quality "Maximet: put the function navigating through the git history in a service"
-  private async getRelevantCommit(
+  private async getRelevantCommits(
     firstCommit: Commit,
     history: HistoryEventEmitter,
     historyNumberOfDays: number,
@@ -83,19 +94,15 @@ export default class Collector {
         const NUMBER_OF_DAYS_TO_BUILD_HISTORY = historyNumberOfDays * 24 * 3600000;
         const endDateTime = startDateTime - NUMBER_OF_DAYS_TO_BUILD_HISTORY;
 
-        const relevantCommits = new Map<string, Commit>();
+        const relevantCommits: Commit[] = [];
         for (let commit of commits) {
           if (commit.date().getTime() < endDateTime) {
             break;
           }
 
-          const formattedDate = dateHelper.getDayMonthYearFormat(commit.date());
-          const commitOfTheDay = relevantCommits.get(formattedDate);
-          if (!commitOfTheDay) {
-            relevantCommits.set(formattedDate, commit);
-          }
+          relevantCommits.push(commit);
         }
-        return resolve(Array.from(relevantCommits.values()));
+        return resolve(relevantCommits);
       });
 
       history.start();
